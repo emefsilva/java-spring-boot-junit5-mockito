@@ -1,7 +1,7 @@
 package io.github.emefsilva.api.domain;
 
-import lombok.*;
 
+import lombok.*;
 import javax.persistence.*;
 
 @Data
