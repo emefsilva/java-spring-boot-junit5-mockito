@@ -3,6 +3,7 @@ package io.github.emefsilva.api.services.impl;
 import io.github.emefsilva.api.domain.User;
 import io.github.emefsilva.api.repositories.UserRepository;
 import io.github.emefsilva.api.services.UserService;
+import io.github.emefsilva.api.services.exceptions.ObjectNotFoundException;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
@@ -20,6 +21,6 @@ public class UserServiceImpl implements UserService {
     public User findById(Integer id) {
         Optional<User> obj = userRepository.findById(id);
 
-        return obj.orElse(null);
+        return obj.orElseThrow(() -> new ObjectNotFoundException("Objeto não encontrado"));
     }
 }
