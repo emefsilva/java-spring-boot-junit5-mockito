@@ -1,15 +1,14 @@
 package io.github.emefsilva.api.domain;
 
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.RequiredArgsConstructor;
 
+import lombok.*;
 import javax.persistence.*;
 
 @Data
-@RequiredArgsConstructor
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
-@Entity(name = "user")
+@Entity(name = "TB_USER")
+@AllArgsConstructor
+@NoArgsConstructor
 public class User {
 
     @Id
