@@ -6,6 +6,7 @@ import io.github.emefsilva.api.services.UserService;
 import io.github.emefsilva.api.services.exceptions.ObjectNotFoundException;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -23,4 +24,11 @@ public class UserServiceImpl implements UserService {
 
         return obj.orElseThrow(() -> new ObjectNotFoundException("Objeto não encontrado"));
     }
+
+    @Override
+    public List<User> findAll() {
+        return userRepository.findAll();
+    }
+
+
 }
