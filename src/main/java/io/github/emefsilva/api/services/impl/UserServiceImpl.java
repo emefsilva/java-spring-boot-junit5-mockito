@@ -41,6 +41,20 @@ public class UserServiceImpl implements UserService {
         return userRepository.save(mapper.map(userDTO, User.class));
     }
 
+    @Override
+    public User update(UserDTO userDTO, Integer id) {
+        findByEmail(userDTO);
+
+        User existingUser = userRepository.findById(id)
+                .orElseThrow(() -> new ObjectNotFoundException("Objeto não encontrado"));
+
+        existingUser.setName(userDTO.getName());
+        existingUser.setEmail(userDTO.getEmail());
+        existingUser.setPassword(userDTO.getPassword());
+
+        return userRepository.save(existingUser);
+    }
+
     private void findByEmail(UserDTO userDTO) {
         Optional<User> user = userRepository.findByEmail(userDTO.getEmail());
        if(user.isPresent()) {
