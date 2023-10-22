@@ -47,4 +47,10 @@ public class UserResource {
     public ResponseEntity<UserDTO> updateUser(@RequestBody UserDTO userDTO, @PathVariable Integer id) {
         return ResponseEntity.status(HttpStatus.NO_CONTENT).body(mapper.map(userService.update(userDTO, id) , UserDTO.class));
     }
+
+    @DeleteMapping(value = "/{îd}")
+    public ResponseEntity<UserDTO> deleteUser(@PathVariable Integer id) {
+        userService.delete(id);
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+    }
 }
