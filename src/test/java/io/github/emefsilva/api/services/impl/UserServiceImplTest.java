@@ -99,7 +99,6 @@ class UserServiceImplTest {
     }
     @Test
     void whenCreateThenReturnSuccess() {
-
         Mockito.when(userRepository.save(Mockito.any())).thenReturn(user);
         User response = userService.create(userDTO);
 
@@ -124,7 +123,30 @@ class UserServiceImplTest {
     }
 
     @Test
-    void update() {
+    void whenUpdateThenReturnSuccess() {
+        Mockito.when(userRepository.findById(Mockito.anyInt())).thenReturn(Optional.of(user));
+        Mockito.when(userRepository.save(Mockito.any())).thenReturn(user);
+
+        User response = userService.update(userDTO, ID);
+
+        assertNotNull(response);
+        assertEquals(User.class, response.getClass());
+        assertEquals(ID, response.getId());
+        assertEquals(NAME, response.getName());
+        assertEquals(EMAIL, response.getEmail());
+        assertEquals(PASSWORD, response.getPassword());
+    }
+
+    @Test
+    void whenUpdateThenReturnDataIntegrityViolationException() {
+        Mockito.when(userRepository.findByEmail(Mockito.anyString())).thenReturn(optionalUser);
+        try {
+            optionalUser.get().setId(2);
+            userService.update(userDTO, ID);
+        } catch (Exception ex) {
+            assertEquals(DataIntegrationViolationException.class, ex.getClass());
+            assertEquals("Email já cadastrado", ex.getMessage());
+        }
     }
 
     @Test
