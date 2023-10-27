@@ -1,13 +1,10 @@
 package io.github.emefsilva.api.services.impl;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
 
 import io.github.emefsilva.api.domain.User;
 import io.github.emefsilva.api.domain.dto.UserDTO;
 import io.github.emefsilva.api.repositories.UserRepository;
-import io.github.emefsilva.api.services.exceptions.DataIntegrationViolationException;
 import io.github.emefsilva.api.services.exceptions.ObjectNotFoundException;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -17,45 +14,59 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
+import org.springframework.boot.test.mock.mockito.MockBean;
 
 
+import java.util.List;
 import java.util.Optional;
 
 @SpringBootTest
+@ExtendWith(MockitoExtension.class)
 class UserServiceImplTest {
 
-    @InjectMocks
+    private static final Integer ID      = 1;
+    private static final Integer INDEX   = 0;
+    private static final String NAME     = "Valdir";
+    private static final String EMAIL    = "valdir@mail.com";
+    private static final String PASSWORD = "123";
+
+    @Autowired
     private UserServiceImpl userService;
-    @Mock
+
+    @MockBean
     private UserRepository userRepository;
 
-    @Mock
+    @MockBean
     private ModelMapper modelMapper;
+
+
+    private User user;
+    private UserDTO userDTO;
+    private Optional<User> optionalUser;
+
 
     @BeforeEach
     void setUp() {
         MockitoAnnotations.openMocks(this);
+        startUser();
     }
 
     @Test
     void whenFindByIdThenReturnUserInstance() {
-        User user = new User();
-        user.setId(1);
-        user.setName("John Doe");
-        user.setEmail("john.doe@example.com");
+        Mockito.when(userRepository.findById(Mockito.anyInt())).thenReturn(Optional.of(user));
 
-        Mockito.when(userRepository.findById(1)).thenReturn(Optional.of(user));
+        var response = userService.findById(ID);
 
+        Assertions.assertNotNull(response);
     }
 
     @Test
     void whenFindByIdThenReturnObjectNotFound() {
-        Mockito.when(userRepository.findById(Mockito.anyInt())).thenReturn(Optional.empty());
+        Mockito.lenient().when(userRepository.findById(Mockito.anyInt())).thenReturn(Optional.empty());
         Assertions.assertThrows(ObjectNotFoundException.class, () -> userService.findById(1));
     }
     @Test
@@ -63,7 +74,7 @@ class UserServiceImplTest {
     void whenFindByIdThenReturnObjectNotFoundMessage() {
         Mockito.when(userRepository.findById(Mockito.anyInt())).thenThrow(new ObjectNotFoundException("Objeto não encontrado"));
         try {
-            userService.findById(1);
+            userService.findById(Mockito.anyInt());
         } catch (Exception ex) {
             assertEquals(ObjectNotFoundException.class, ex.getClass());
             assertEquals("Objeto não encontrado",  ex.getMessage());
@@ -72,9 +83,19 @@ class UserServiceImplTest {
     }
 
     @Test
-    void findAll() {
-    }
+    void whenFindAllThenReturnAnListOfUsers() {
+        Mockito.when(userRepository.findAll()).thenReturn(List.of(user));
 
+        List<User> response = userService.findAll();
+
+        assertNotNull(response);
+        assertEquals(1, response.size());
+        assertEquals(User.class, response.get(0).getClass());
+        assertEquals(ID, response.get(0).getId());
+        assertEquals(NAME, response.get(0).getName());
+        assertEquals(EMAIL, response.get(0).getEmail());
+        assertEquals(PASSWORD, response.get(0).getPassword());
+    }
     @Test
     void create() {
     }
@@ -87,15 +108,9 @@ class UserServiceImplTest {
     void delete() {
     }
 
-    public static User setupUser() {
-        return User.builder().id(1).name("Emerson").email("emerson@gmail.com").password("1234").build();
-    }
-
-    public static UserDTO setupUserDTO() {
-        return UserDTO.builder().id(1).name("Emerson").email("emerson@gmail.com").password("1234").build();
-    }
-
-    public static Optional<User> setupOptional() {
-        return Optional.of(User.builder().id(1).name("Emerson").email("emerson@gmail.com").password("1234").build());
+    private void startUser() {
+        user = new User(ID, NAME, EMAIL,  PASSWORD);
+        userDTO = new UserDTO(ID, NAME, EMAIL, PASSWORD);
+        optionalUser = Optional.of(new User(ID, NAME, EMAIL, PASSWORD));
     }
 }
