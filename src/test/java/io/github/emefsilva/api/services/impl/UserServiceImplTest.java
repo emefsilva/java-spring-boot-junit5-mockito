@@ -5,6 +5,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import io.github.emefsilva.api.domain.User;
 import io.github.emefsilva.api.domain.dto.UserDTO;
 import io.github.emefsilva.api.repositories.UserRepository;
+import io.github.emefsilva.api.services.exceptions.DataIntegrationViolationException;
 import io.github.emefsilva.api.services.exceptions.ObjectNotFoundException;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -90,14 +91,36 @@ class UserServiceImplTest {
 
         assertNotNull(response);
         assertEquals(1, response.size());
-        assertEquals(User.class, response.get(0).getClass());
-        assertEquals(ID, response.get(0).getId());
-        assertEquals(NAME, response.get(0).getName());
-        assertEquals(EMAIL, response.get(0).getEmail());
-        assertEquals(PASSWORD, response.get(0).getPassword());
+        assertEquals(User.class, response.get(INDEX).getClass());
+        assertEquals(ID, response.get(INDEX).getId());
+        assertEquals(NAME, response.get(INDEX).getName());
+        assertEquals(EMAIL, response.get(INDEX).getEmail());
+        assertEquals(PASSWORD, response.get(INDEX).getPassword());
     }
     @Test
-    void create() {
+    void whenCreateThenReturnSuccess() {
+
+        Mockito.when(userRepository.save(Mockito.any())).thenReturn(user);
+        User response = userService.create(userDTO);
+
+        assertNotNull(response);
+        assertEquals(User.class, response.getClass());
+        assertEquals(ID, response.getId());
+        assertEquals(NAME, response.getName());
+        assertEquals(EMAIL, response.getEmail());
+        assertEquals(PASSWORD, response.getPassword());
+    }
+
+    @Test
+    void whenCreateThenReturnDataIntegrityViolationException() {
+        Mockito.when(userRepository.findByEmail(Mockito.anyString())).thenReturn(optionalUser);
+        try {
+            optionalUser.get().setId(2);
+            userService.create(userDTO);
+        } catch (Exception ex) {
+            assertEquals(DataIntegrationViolationException.class, ex.getClass());
+            assertEquals("Email já cadastrado", ex.getMessage());
+        }
     }
 
     @Test
