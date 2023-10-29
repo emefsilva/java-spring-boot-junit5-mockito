@@ -105,7 +105,7 @@ class UserResourceTest {
     }
 
     @Test
-    void whenUpdateUserThenReturnSuccessAndStatus200() {
+    void whenUpdateUserThenReturnSuccessAndStatus204() {
         Mockito.when(userService.findById(ID)).thenReturn(user);
         Mockito.when(userService.update(Mockito.any(), Mockito.anyInt())).thenReturn(user);
         Mockito.when(modelMapper.map(Mockito.any(),Mockito.any())).thenReturn(userDTO);
@@ -122,7 +122,16 @@ class UserResourceTest {
         Assertions.assertEquals(EMAIL, response.getBody().getEmail());
     }
     @Test
-    void deleteUser() {
+    void WhenDeleteUserThenReturnSuccessAndStatusCode204() {
+
+        Mockito.doNothing().when(userService).delete(Mockito.anyInt());
+
+        ResponseEntity<UserDTO> response = userResource.deleteUser(ID);
+
+        assertNotNull(response);
+        assertEquals(HttpStatus.NO_CONTENT, response.getStatusCode());
+        assertEquals(ResponseEntity.class, response.getClass());
+        Mockito.verify(userService, Mockito.times(1)).delete(Mockito.anyInt());
     }
 
     private void startUser() {
