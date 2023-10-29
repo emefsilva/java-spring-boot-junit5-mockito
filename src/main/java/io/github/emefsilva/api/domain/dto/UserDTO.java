@@ -2,12 +2,10 @@ package io.github.emefsilva.api.domain.dto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.Getter;
 
-@Data
 @AllArgsConstructor
-@NoArgsConstructor
+@Getter
 public class UserDTO {
 
     private Integer id;

@@ -10,6 +10,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -94,15 +95,43 @@ class UserResourceTest {
     }
 
     @Test
-    void createUser() {
+    void whenCreateUserThenReturnSuccessAndStatus201() {
+        Mockito.when(userService.create(Mockito.any())).thenReturn(user);
+        ResponseEntity<UserDTO> response = userResource.createUser(userDTO);
+
+        Assertions.assertNotNull(response.getHeaders().get("Location"));
+        Assertions.assertEquals(HttpStatus.CREATED, response.getStatusCode());
+        Assertions.assertEquals(ResponseEntity.class, response.getClass());
     }
 
     @Test
-    void updateUser() {
-    }
+    void whenUpdateUserThenReturnSuccessAndStatus204() {
+        Mockito.when(userService.findById(ID)).thenReturn(user);
+        Mockito.when(userService.update(Mockito.any(), Mockito.anyInt())).thenReturn(user);
+        Mockito.when(modelMapper.map(Mockito.any(),Mockito.any())).thenReturn(userDTO);
 
+        ResponseEntity<UserDTO> response = userResource.updateUser(userDTO, ID);
+        Assertions.assertNotNull(response);
+        Assertions.assertEquals(HttpStatus.NO_CONTENT, response.getStatusCode());
+        Assertions.assertNotNull(response.getBody());
+        Assertions.assertEquals(UserDTO.class, response.getBody().getClass());
+        Assertions.assertEquals(ResponseEntity.class, response.getClass());
+
+        Assertions.assertEquals(ID, response.getBody().getId());
+        Assertions.assertEquals(NAME, response.getBody().getName());
+        Assertions.assertEquals(EMAIL, response.getBody().getEmail());
+    }
     @Test
-    void deleteUser() {
+    void WhenDeleteUserThenReturnSuccessAndStatusCode204() {
+
+        Mockito.doNothing().when(userService).delete(Mockito.anyInt());
+
+        ResponseEntity<UserDTO> response = userResource.deleteUser(ID);
+
+        assertNotNull(response);
+        assertEquals(HttpStatus.NO_CONTENT, response.getStatusCode());
+        assertEquals(ResponseEntity.class, response.getClass());
+        Mockito.verify(userService, Mockito.times(1)).delete(Mockito.anyInt());
     }
 
     private void startUser() {

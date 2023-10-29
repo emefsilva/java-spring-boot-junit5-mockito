@@ -1,14 +1,12 @@
 package io.github.emefsilva.api.resources.exceptions;
 
 import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.Getter;
 
 import java.time.LocalDateTime;
 
-@Data
+@Getter
 @AllArgsConstructor
-@NoArgsConstructor
 public class StandardError {
 
     private LocalDateTime timestamp;
