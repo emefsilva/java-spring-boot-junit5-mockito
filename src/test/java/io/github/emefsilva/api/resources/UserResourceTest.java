@@ -10,6 +10,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -94,11 +95,13 @@ class UserResourceTest {
     }
 
     @Test
-    void createUser() {
-    }
+    void whenCreateUserThenReturnSuccessAndStatus201() {
+        Mockito.when(userService.create(Mockito.any())).thenReturn(user);
+        ResponseEntity<UserDTO> response = userResource.createUser(userDTO);
 
-    @Test
-    void updateUser() {
+        Assertions.assertNotNull(response.getHeaders().get("Location"));
+        Assertions.assertEquals(HttpStatus.CREATED, response.getStatusCode());
+        Assertions.assertEquals(ResponseEntity.class, response.getClass());
     }
 
     @Test
