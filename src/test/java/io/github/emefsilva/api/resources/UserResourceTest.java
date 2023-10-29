@@ -105,6 +105,23 @@ class UserResourceTest {
     }
 
     @Test
+    void whenUpdateUserThenReturnSuccessAndStatus200() {
+        Mockito.when(userService.findById(ID)).thenReturn(user);
+        Mockito.when(userService.update(Mockito.any(), Mockito.anyInt())).thenReturn(user);
+        Mockito.when(modelMapper.map(Mockito.any(),Mockito.any())).thenReturn(userDTO);
+
+        ResponseEntity<UserDTO> response = userResource.updateUser(userDTO, ID);
+        Assertions.assertNotNull(response);
+        Assertions.assertEquals(HttpStatus.NO_CONTENT, response.getStatusCode());
+        Assertions.assertNotNull(response.getBody());
+        Assertions.assertEquals(UserDTO.class, response.getBody().getClass());
+        Assertions.assertEquals(ResponseEntity.class, response.getClass());
+
+        Assertions.assertEquals(ID, response.getBody().getId());
+        Assertions.assertEquals(NAME, response.getBody().getName());
+        Assertions.assertEquals(EMAIL, response.getBody().getEmail());
+    }
+    @Test
     void deleteUser() {
     }
 
